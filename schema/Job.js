@@ -24,6 +24,7 @@ const jobSchema = new mongoose.Schema({
     },
     eligibilityCriteria: String,
     ctc: String,
+    postedBy: String,
     createdAt: {
         type: Date,
         default: Date.now
