@@ -5,11 +5,11 @@ const dotenv = require('dotenv');
 
 const app= express();
 dotenv.config();
-const userLogin = require('./routes/userLogin');
-const userRegister = require('./routes/userRegister');
-const jobs = require('./routes/jobs');
-const userProfiles = require('./routes/userProfile');
-const fileUpload = require('./routes/fileUpload')
+const userLogin = require('./routes/user/userLogin');
+const userRegister = require('./routes/user/userRegister');
+const jobs = require('./routes/job/jobs');
+const userProfiles = require('./routes/user/userProfile');
+const fileUpload = require('./routes/file/fileUpload')
 const recruiterLogin = require('./routes/recruiter/recruiterLogin');
 const recruiterRegister = require('./routes/recruiter/recruiterRegister');
 const recruiterProfile = require('./routes/recruiter/recruiterProfile');

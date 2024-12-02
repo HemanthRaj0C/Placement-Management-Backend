@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
 dotenv.config();
-const User = require('../schema/User');
+const User = require('../../schema/Users/User');
 
 router.post('/userLogin', async (req, res) => {
     const { email, password } = req.body;

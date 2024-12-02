@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const router = express.Router();
 
-const User = require('../schema/User');
+const User = require('../../schema/Users/User');
 
 router.post('/userRegister', async (req, res) => {
     const { studentID, name, email, password, branch } = req.body;

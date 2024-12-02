@@ -1,8 +1,8 @@
 const express = require('express');
-const verifyToken = require('../middleware/verifyToken');
-const upload = require('../config/multerConfig');
-const FileUpload = require('../schema/FileUpload');
-const User = require('../schema/User');
+const verifyToken = require('../../middleware/verifyUserToken');
+const upload = require('../../config/multerConfig');
+const FileUpload = require('../../schema/Files/FileUpload');
+const User = require('../../schema/Users/User');
 const path = require('path');
 const fs = require('fs');
 

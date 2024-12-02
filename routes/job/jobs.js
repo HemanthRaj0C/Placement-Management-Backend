@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const Job = require('../schema/Job');
-const JobApplication = require('../schema/JobApplication');
-const User = require('../schema/User');
+const Job = require('../../schema/Jobs/Job');
+const JobApplication = require('../../schema/Jobs/JobApplication');
+const User = require('../../schema/Users/User');
 
-const verifyToken = require('../middleware/verifyToken');
-const verifyRecruiterToken = require('../middleware/verifyRecruiterToken');
-const Recruiters = require('../schema/Recruiters/Recruiters');
+const verifyUserToken = require('../../middleware/verifyUserToken');
+const verifyRecruiterToken = require('../../middleware/verifyRecruiterToken');
+const Recruiters = require('../../schema/Recruiters/Recruiters');
 
 router.get('/jobs', async (req, res) => {
     const jobs = await Job.find({});
@@ -64,7 +64,7 @@ router.post('/jobs', verifyRecruiterToken, async (req, res) => {
     res.status(201).json({ message: 'Job added successfully' });
 });
 
-router.post('/applyJob', verifyToken, async (req, res) => {
+router.post('/applyJob', verifyUserToken, async (req, res) => {
     const { jobID } = req.body;
     const studentID = req.studentID;
 
@@ -169,7 +169,7 @@ router.patch('/updateApplicationStatus', verifyRecruiterToken, async (req, res) 
     }
 });
 
-router.get('/appliedJobs', verifyToken, async (req, res)=>{
+router.get('/appliedJobs', verifyUserToken, async (req, res)=>{
     const studentID = req.studentID;
     const appliedJobs = await JobApplication.find({studentID})
     res.status(200).json(appliedJobs);

@@ -1,9 +1,9 @@
 const express = require('express');
-const verifyToken = require('../middleware/verifyToken');
-const UserProfile = require('../schema/UserProfile');
+const verifyUserToken = require('../../middleware/verifyUserToken');
+const UserProfile = require('../../schema/Users/UserProfile');
 const router = express.Router();
 
-router.get('/userProfile', verifyToken, async (req, res) => {
+router.get('/userProfile', verifyUserToken, async (req, res) => {
 
     const email = req.email;
     if(!email){
@@ -16,7 +16,7 @@ router.get('/userProfile', verifyToken, async (req, res) => {
     res.status(200).json(userProfile);
 });
 
-router.post('/userProfile', verifyToken, async (req, res) => {
+router.post('/userProfile', verifyUserToken, async (req, res) => {
     const { firstName, lastName, email, mobileNumber, degree, degreeStatus, highestQualification, technicalSkills, otherSkills, experience, projectLinks } = req.body;
 
     if(!firstName || !lastName || !email || !mobileNumber || !degree || !degreeStatus || !highestQualification || !technicalSkills || !otherSkills || experience == undefined || !projectLinks){
