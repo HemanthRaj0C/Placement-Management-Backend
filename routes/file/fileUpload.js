@@ -3,8 +3,12 @@ const verifyToken = require('../../middleware/verifyUserToken');
 const upload = require('../../config/multerConfig');
 const FileUpload = require('../../schema/Files/FileUpload');
 const User = require('../../schema/Users/User');
+const Recruiters = require('../../schema/Recruiters/Recruiters');
+const Job = require('../../schema/Jobs/Job');
+const JobApplication = require('../../schema/Jobs/JobApplication');
 const path = require('path');
 const fs = require('fs');
+const verifyRecruiterToken = require('../../middleware/verifyRecruiterToken');
 
 const router = express.Router();
 
@@ -92,6 +96,70 @@ router.get('/download-resume', verifyToken, async (req, res) => {
     } catch (error) {
         console.error('Download error:', error);
         res.status(500).json({ message: 'Error downloading resume' });
+    }
+});
+
+router.get('/appliedResume', verifyRecruiterToken, async (req, res) => {
+    try {
+        const email = req.email;
+        const recruiter = await Recruiters.findOne({ email: email });
+        
+        if (!recruiter) {
+            return res.status(404).json({ message: 'Recruiter not found' });
+        }
+
+        const jobs = await Job.find({ postedBy: recruiter.name });
+        const jobIDs = jobs.map(job => job.jobID);
+
+        const applications = await JobApplication.find({
+            jobID: { $in: jobIDs }
+        });
+
+        const appliedResumes = await FileUpload.find({
+            studentID: { $in: applications.map(application => application.studentID) }
+        });
+
+        if (appliedResumes.length === 0) {
+            return res.status(404).json({ message: 'No resumes found for your job applications' });
+        }
+
+        // Send list of resumes instead of downloading
+        const resumeList = appliedResumes.map(resume => ({
+            _id: resume._id,
+            studentID: resume.studentID,
+            fileName: resume.originalName,
+            uploadPath: resume.uploadPath
+        }));
+
+        res.json({ resumes: resumeList });
+
+    } catch (error) {
+        console.error('Error fetching job applications:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/download-resume/:resumeId', verifyRecruiterToken, async (req, res) => {
+    try {
+        const resume = await FileUpload.findById(req.params.resumeId);
+        if (!resume) {
+            return res.status(404).json({ message: 'Resume not found' });
+        }
+
+        const filePath = path.resolve(resume.uploadPath);
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ message: 'File not found' });
+        }
+
+        res.download(filePath, resume.originalName, (err) => {
+            if (err) {
+                console.error('Download error:', err);
+                res.status(500).json({ message: 'Error downloading resume' });
+            }
+        });
+    } catch (error) {
+        console.error('Error downloading resume:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
