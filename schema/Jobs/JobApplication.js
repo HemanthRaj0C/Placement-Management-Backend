@@ -23,7 +23,7 @@ const JobApplicationSchema = new mongoose.Schema({
     companyName: String,
     applicationStatus: {
         type:String,
-        enum:['Applied', 'Shortlisted', 'Rejected'],
+        enum:['Applied', 'Shortlisted', 'Rejected', 'Hired'],
     },
     createdAt: {
         type: Date,

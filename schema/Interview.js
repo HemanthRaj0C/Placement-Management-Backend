@@ -47,7 +47,7 @@ const InterviewSchema = new mongoose.Schema({
     applicationStatus: {
         type: String,
         default: 'Interviewed',
-        enum: ['Applied', 'Shortlisted', 'Interviewed', 'Rejected']
+        enum: ['Accepted', 'Interview', 'Rejected']
     }
 }, { timestamps: true });
 

@@ -65,6 +65,43 @@ router.post('/schedule-interview', verifyRecruiterToken, async (req, res) => {
     }
 });
 
+router.post('/update-interview', verifyRecruiterToken, async (req, res) => {
+    try {
+        const { applicationID, applicationStatus } = req.body;
+        if (!applicationID || !applicationStatus) {
+            return res.status(400).json({ message: 'Application ID and status are required' });
+        }
+
+        const interview = await Interview.findOne({ applicationID });
+        
+        if (!interview) {
+            return res.status(404).json({ message: 'Interview not found' });
+        }
+
+        interview.applicationStatus = applicationStatus;
+        await interview.save();
+        
+        const jobApplication = await JobApplication.findOneAndUpdate(
+            { applicationID },
+            { applicationStatus: applicationStatus === 'Accepted' ? 'Hired' : 'Rejected' },
+            { new: true }
+        );
+
+        if (!jobApplication) {
+            return res.status(404).json({ message: 'Job application not found' });
+        }
+
+        res.status(200).json({ 
+            message: `Interview status updated to ${applicationStatus}`,
+            interview,
+            jobApplication
+        });
+    } catch (error) {
+        console.error('Error updating interview:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
 router.get('/interviews', verifyRecruiterToken, async (req, res) => {
     try {
         const interviews = await Interview.find().sort({ interviewDate: 1 });
