@@ -80,7 +80,7 @@ router.post('/update-interview', verifyRecruiterToken, async (req, res) => {
 
         interview.applicationStatus = applicationStatus;
         await interview.save();
-        
+
         const jobApplication = await JobApplication.findOneAndUpdate(
             { applicationID },
             { applicationStatus: applicationStatus === 'Accepted' ? 'Hired' : 'Rejected' },
@@ -104,7 +104,11 @@ router.post('/update-interview', verifyRecruiterToken, async (req, res) => {
 
 router.get('/interviews', verifyRecruiterToken, async (req, res) => {
     try {
-        const interviews = await Interview.find().sort({ interviewDate: 1 });
+        const interviews = await Interview.find({
+            applicationStatus: { 
+                $in: ['Shortlisted', 'Interview'] 
+            }
+        });
         res.json(interviews);
     } catch (error) {
         console.error(error);
@@ -114,8 +118,15 @@ router.get('/interviews', verifyRecruiterToken, async (req, res) => {
 
 router.get('/user-interviews', verifyUserToken, async (req, res) => {
     try {
+        const activeApplications = await JobApplication.find({
+            studentID: req.user.studentID,
+            applicationStatus: { $ne: 'Hired' }
+        });
+
+        const activeJobIDs = activeApplications.map(app => app.jobID);
         const interviews = await Interview.find({ 
-            studentID: req.user.studentID 
+            studentID: req.user.studentID,
+            jobID: { $in: activeJobIDs }
         }).sort({ interviewDate: 1 });
         
         res.json(interviews);
