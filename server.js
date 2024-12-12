@@ -30,7 +30,10 @@ app.use('/api', recruiterProfile);
 app.use('/api', interview);
 app.use('/api', quiz);
 
-mongoose.connect('mongodb://localhost:27017/placement-management', { 
+// host.docker.internal for docker container
+// localhost for local machine
+
+mongoose.connect('mongodb://host.docker.internal:27017/placement-management', { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
 })
